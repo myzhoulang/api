@@ -12,7 +12,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 Sentry.init({
-  dsn: 'http://3bd63b641eae448e9e71756d2e7e3955@47.98.62.21:9000/5',
+  dsn: process.env.SENTRY_DSN,
 });
 app.use(Sentry.Handlers.requestHandler());
 
