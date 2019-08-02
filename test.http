@@ -1,0 +1,26 @@
+@url=localhost:6000/api
+@json=Content-Type: application/json
+
+### get index
+GET {{url}}/users
+Authorization: Bearer eyJhbGciOiJsIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkMzgwZTI1MTdkMGQ2N2ZkOGVhMjEyMyIsImlhdCI6MTU2Mzk1NDc0MiwiZXhwIjoxNTYzOTU0ODAyfQ.X1oSDbPEPU684OvRJHtpYDEGnuOJMyq45BuZt5nf-Xo
+
+
+### create user
+POST {{url}}/users
+{{json}}
+
+{
+  "user_name": "1234567",
+  "password": "1234567"
+}
+
+
+### login
+POST {{url}}/login
+{{json}}
+
+{
+  "user_name": "",
+  "password": ""
+}
