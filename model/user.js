@@ -20,6 +20,7 @@ const user = new mongoose.Schema({
 
   password: {
     type: String,
+    select: false,
     set(val) {
       // 密码加盐
       return bcrypt.hashSync(val, 10);

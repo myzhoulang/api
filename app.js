@@ -11,10 +11,12 @@ const { connect } = require('./utils/db');
 const app = express();
 const port = process.env.PORT || 3000;
 
-Sentry.init({
-  dsn: process.env.SENTRY_DSN,
-});
-app.use(Sentry.Handlers.requestHandler());
+if (process.env.NODE_ENV !== 'development') {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+  });
+  app.use(Sentry.Handlers.requestHandler());
+}
 
 const authController = require('./controller/authController');
 const { loginBodyValidator } = require('./middleware/auth');
@@ -55,7 +57,9 @@ app.use((req, res) => {
   });
 });
 
-app.use(Sentry.Handlers.errorHandler());
+if (process.env.NODE_ENV !== 'development') {
+  app.use(Sentry.Handlers.errorHandler());
+}
 
 // error
 app.use((error, req, res, next) => {
@@ -63,6 +67,7 @@ app.use((error, req, res, next) => {
     message: error.message,
   });
 });
+
 // listen port
 app.listen(port, () => {
   console.log(`Server is Running port: ${port}`);

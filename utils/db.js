@@ -6,18 +6,15 @@ const mongodbUrl = `${process.env.DB_URL}/${process.env.DB_DATABASE}`;
 module.exports = {
   connect(opts = {}) {
     const mongodbOptions = Object.assign(
-        {
-          useCreateIndex: true,
-          useNewUrlParser: true,
-        },
-        opts,
+      {
+        useCreateIndex: true,
+        useNewUrlParser: true,
+      },
+      opts,
     );
-    mongoose.connect(mongodbUrl, mongodbOptions, (err) => {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log('mongodb ok');
-      }
-    });
+    mongoose
+      .connect(mongodbUrl, mongodbOptions)
+      .then(r => console.log('mongodb ok'))
+      .catch(e => console.log(e));
   },
 };

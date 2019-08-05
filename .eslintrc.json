@@ -11,6 +11,17 @@
   },
   "rules": {
     "object-curly-spacing": ["error", "always"],
-    "camelcase": 0
+    "camelcase": 0,
+    "indent": ["error", 2, { "SwitchCase": 1 }],
+    "arrow-parens": ["error", "as-needed"],
+    "require-jsdoc": ["error", {
+      "require": {
+        "FunctionDeclaration": false,
+        "MethodDefinition": false,
+        "ClassDeclaration": false,
+        "ArrowFunctionExpression": false,
+        "FunctionExpression": false
+      }
+    }]
   }
 }

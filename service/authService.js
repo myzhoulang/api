@@ -9,25 +9,25 @@ module.exports = {
     try {
       const user = await User.findOne({
         user_name: body.user_name,
-      });
+      }).select('user_name password');
       if (!user) {
         return utils.error(401, '账号或密码错误');
       }
       const isUserValid = await bcrypt.compareSync(
-          body.password,
-          user.password,
+        body.password,
+        user.password,
       );
       if (!isUserValid) {
         return utils.error(401, '账号或密码错误');
       }
       const token = jwt.sign(
-          {
-            id: String(user._id),
-          },
-          process.env.JWT_SECRET,
-          {
-            expiresIn: '1h',
-          },
+        {
+          id: String(user._id),
+        },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: '1h',
+        },
       );
       return utils.success(200, token);
     } catch (error) {

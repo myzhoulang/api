@@ -17,7 +17,7 @@ module.exports = {
   async getUserByUserName(userName) {
     try {
       const user = await User.findOne({ user_name: userName }).select(
-          '_id user_name',
+        '_id user_name',
       );
       return utils.success(200, user);
     } catch (e) {

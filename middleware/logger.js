@@ -23,13 +23,13 @@ const failLogStream = FileStreamRotator.getStream({
 });
 
 // 自定义记录字段
-morgan.token('query', (req) => {
+morgan.token('query', req => {
   return `query => ${JSON.stringify(req.query)} -`;
 });
-morgan.token('body', (req) => {
+morgan.token('body', req => {
   return `body => ${JSON.stringify(req.body)} -`;
 });
-morgan.token('params', (req) => {
+morgan.token('params', req => {
   return `params => ${JSON.stringify(req.params)} -`;
 });
 
