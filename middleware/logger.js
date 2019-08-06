@@ -4,10 +4,8 @@ const fs = require('fs');
 const path = require('path');
 const morgan = require('morgan');
 const FileStreamRotator = require('file-stream-rotator');
-
-const logDirectory = path.join(__dirname, 'log');
+const logDirectory = path.join(__dirname, '../log');
 fs.existsSync(logDirectory) || fs.mkdirSync(logDirectory);
-
 const successLogStream = FileStreamRotator.getStream({
   date_format: 'YYYYMMDD',
   filename: path.join(logDirectory, 'success-%DATE%.log'),
