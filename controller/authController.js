@@ -15,8 +15,8 @@ module.exports = {
         user_name,
         password,
       });
-      const { status = 200, data: token } = result;
-      res.status(status).send({ token });
+      const { status = 200, data: token, message } = result;
+      res.status(status).send({ token, message });
     } catch (error) {
       next(error);
     }

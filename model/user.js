@@ -20,6 +20,7 @@ const user = new mongoose.Schema({
 
   password: {
     type: String,
+    require: true,
     select: false,
     set(val) {
       // 密码加盐

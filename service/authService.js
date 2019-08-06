@@ -10,6 +10,9 @@ module.exports = {
       const user = await User.findOne({
         user_name: body.user_name,
       }).select('user_name password');
+
+      console.log(user)
+
       if (!user) {
         return utils.error(401, '账号或密码错误');
       }
@@ -17,6 +20,7 @@ module.exports = {
         body.password,
         user.password,
       );
+      console.log(isUserValid);
       if (!isUserValid) {
         return utils.error(401, '账号或密码错误');
       }
