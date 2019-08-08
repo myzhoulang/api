@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "@sentry/node": "^5.5.0",
+    "@types/express": "^4.17.0",
     "bcrypt": "^3.0.6",
     "cors": "^2.8.5",
     "express": "^4.17.1",
