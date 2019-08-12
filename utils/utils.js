@@ -1,14 +1,23 @@
+const { validationResult } = require('express-validator');
+
 module.exports = {
-  error(status = 500, message = 'Internal Server Error') {
+  makeResult({ message, errors, status = 200, data }) {
+    if (status >= 200 && status < 300) {
+      return data;
+    }
     return {
-      status,
       message,
+      errors,
     };
   },
-  success(status = 200, data) {
-    return {
-      status,
-      data,
-    };
+
+  validate(req, res) {
+    // 校验、转义html
+    const errors = validationResult(req, res);
+    if (!errors.isEmpty()) {
+      res.status(422).json(errors.array());
+      return false;
+    }
+    return true;
   },
 };

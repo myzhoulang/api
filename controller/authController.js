@@ -21,4 +21,5 @@ module.exports = {
       next(error);
     }
   },
+  async logout(req, res, next) {},
 };

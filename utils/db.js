@@ -9,6 +9,7 @@ module.exports = {
       {
         useCreateIndex: true,
         useNewUrlParser: true,
+        useFindAndModify: false,
       },
       opts,
     );

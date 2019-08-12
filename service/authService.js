@@ -11,8 +11,6 @@ module.exports = {
         user_name: body.user_name,
       }).select('user_name password');
 
-      console.log(user)
-
       if (!user) {
         return utils.error(401, '账号或密码错误');
       }
@@ -20,9 +18,8 @@ module.exports = {
         body.password,
         user.password,
       );
-      console.log(isUserValid);
       if (!isUserValid) {
-        return utils.error(401, '账号或密码错误');
+        return { status: 401, message: '账号或密码错误' };
       }
       const token = jwt.sign(
         {
@@ -33,9 +30,9 @@ module.exports = {
           expiresIn: '1h',
         },
       );
-      return utils.success(200, token);
+      return { data: token };
     } catch (error) {
-      return utils.error(500, error.message);
+      return { status: 500, message: error.message };
     }
   },
 };

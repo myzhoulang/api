@@ -47,8 +47,14 @@ app.use(
 // login
 app.post('/api/login', loginBodyValidator(), authController.login);
 
+// authenticated user
+app.use('/api/user', require('./router/user'));
+
 // users
-app.use('/api/users', require('./router/user'));
+app.use('/api/users', require('./router/users'));
+
+// news
+app.use('/api/news', require('./router/news'));
 
 // 404
 app.use((req, res) => {

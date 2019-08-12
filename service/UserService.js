@@ -1,15 +1,13 @@
 'use strict';
-
 const { User } = require('../model/user');
-const utils = require('../utils/utils');
 
 class UserService {
   static async getUsers() {
     try {
-      const users = await User.find().select('_id user_name');
-      return utils.success(200, users);
+      const users = await User.find().select('user_name');
+      return { data: users };
     } catch (e) {
-      return utils.error(e.statusCode, e.message);
+      return { status: e.statusCode || 500, message: e.message };
     }
   }
 
@@ -20,9 +18,9 @@ class UserService {
       const user = await User.findOne({ user_name: userName }).select(
         '_id user_name',
       );
-      return utils.success(200, user);
+      return { data: user };
     } catch (e) {
-      return utils.error(e.statusCode, e.message);
+      return { status: e.statusCode || 500, message: e.message };
     }
   }
 
@@ -30,9 +28,9 @@ class UserService {
   static async getUserById(id) {
     try {
       const user = await User.findById(id).select('_id user_name');
-      return utils.success(200, user);
+      return { status: 200, data: user };
     } catch (e) {
-      return utils.error(e.statusCode, e.message);
+      return { status: e.statusCode || 500, message: e.message };
     }
   }
 
@@ -43,12 +41,13 @@ class UserService {
       user = await User.findOne({ user_name: body.user_name });
       if (!user) {
         user = await User.create(body);
-        return utils.success(200, user);
+
+        return { data: user };
       } else {
-        return utils.error(409, '用户名称重复');
+        return { status: 409, message: '用户名重复' };
       }
     } catch (e) {
-      return utils.error(e.statusCode, e.message);
+      return { status: e.statusCode || 500, message: e.message };
     }
   }
 
@@ -56,23 +55,24 @@ class UserService {
   static async removeUserById(id) {
     try {
       await User.deleteOne({ _id: id });
-      return utils.success(204);
+      return { status: 204 };
     } catch (e) {
-      return utils.error(e.statusCode, e.message);
+      return { status: e.statusCode || 500, message: e.message };
     }
   }
 
   // 根据用户 ID 更新用户字段
   static async updateUserById(id, body) {
     try {
-      const user = await User.findByIdAndUpdate(
-        id,
-        { $set: body },
-        { new: true },
-      );
-      return utils.success(200, user);
+      let { data: user } = await UserService.getUserByUserName(body.user_name);
+      if (user && user._id.toString() !== id) {
+        return { status: 409, message: '用户名重复' };
+      }
+      user = await User.findByIdAndUpdate(id, { $set: body }, { new: true });
+
+      return { data: user };
     } catch (e) {
-      return utils.error(e.statusCode, e.message);
+      return { status: e.statusCode || 500, message: e.message };
     }
   }
 }
