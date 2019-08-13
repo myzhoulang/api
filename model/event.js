@@ -33,7 +33,7 @@ const event = new mongoose.Schema(
 
     // 事件内容 可多事件
     contents: {
-      type: Array,
+      type: String,
       require: true,
     },
 

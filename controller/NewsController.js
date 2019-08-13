@@ -1,7 +1,5 @@
 'use strict';
-
-const { validationResult } = require('express-validator');
-const { body, param } = require('express-validator/check');
+const { body } = require('express-validator/check');
 const createDOMPurify = require('dompurify');
 const { JSDOM } = require('jsdom');
 const NewsService = require('../service/NewsService');
@@ -11,94 +9,61 @@ const window = new JSDOM('').window;
 const DOMPurify = createDOMPurify(window);
 
 class NewsController {
-  constructor() {
-    this.rules = [];
-  }
+  constructor() {}
 
-  static validate(method) {
+  // 根据 api动作获取api 检验规则
+  static rules(method) {
     switch (method) {
       case 'createNews':
-        return [
-          body('title')
-            .isString()
-            .withMessage('标题必须是一个字符串')
-            .trim()
-            .not()
-            .isEmpty()
-            .withMessage('标题不能为空')
-            // .isLength({ min: 5 })
-            // .withMessage('标题不能小于5位数')
-            .escape(),
-          body('cover')
-            .isString()
-            .withMessage('新闻封面必须是一个字符串')
-            .trim()
-            .not()
-            .isEmpty()
-            .withMessage('新闻封面必须是存在')
-            .isURL()
-            .withMessage('新闻是非法的url地址'),
-
-          body('details')
-            .isString()
-            .withMessage('新闻内容必须是字符串')
-            .trim()
-            .not()
-            .isEmpty()
-            .withMessage('新闻内容不能为空'),
-        ];
+        return NewsController.newsRule();
       case 'getNewsById':
       case 'removeNewsById':
-        return [
-          param('id')
-            .trim()
-            .not()
-            .isEmpty()
-            .withMessage('用户id必须存在')
-            .isMongoId()
-            .withMessage('非法的用户ID'),
-        ];
+        return [utils.validateId()];
       case 'updateNewsById':
-        return [
-          param('id')
-            .trim()
-            .not()
-            .isEmpty()
-            .withMessage('用户id必须存在')
-            .isMongoId()
-            .withMessage('非法的用户ID'),
-          body('title')
-            .optional()
-            .isString()
-            .withMessage('标题是一个字符串')
-            .trim()
-            .not()
-            .isEmpty()
-            // .isLength({ min: 5 })
-            // .withMessage('标题不能小于5位数')
-            .escape(),
-          body('cover')
-            .optional()
-            .isString()
-            .withMessage('新闻封面必须是一个字符串')
-            .trim()
-            .not()
-            .isEmpty()
-            .withMessage('新闻封面必须是存在')
-            .isURL()
-            .withMessage('新闻封面是非法的url地址'),
-          body('details')
-            .optional()
-            .isString()
-            .withMessage('新闻内容必须是字符串')
-            .trim()
-            .not()
-            .isEmpty()
-            .withMessage('新闻内容不能为空'),
-        ];
+        return [utils.validateId(), ...NewsController.newsRule('update')];
       default:
         return [];
     }
+  }
+
+  static newsRule(type) {
+    let title = body('title');
+    let cover = body('cover');
+    let details = body('details');
+    if (type === 'update') {
+      title = title.optional();
+      cover = cover.optional();
+      details = details.optional();
+    }
+    return [
+      title
+        .isString()
+        .withMessage('标题必须是一个字符串')
+        .trim()
+        .not()
+        .isEmpty()
+        .withMessage('标题不能为空')
+        // .isLength({ min: 5 })
+        // .withMessage('标题不能小于5位数')
+        .escape(),
+      cover
+        .isString()
+        .withMessage('新闻封面必须是一个字符串')
+        .trim()
+        .not()
+        .isEmpty()
+        .withMessage('新闻封面必须是存在')
+        .isURL()
+        .withMessage('新闻是非法的url地址'),
+
+      details
+        .isString()
+        .withMessage('新闻内容必须是字符串')
+        .trim()
+        .not()
+        .isEmpty()
+        .withMessage('新闻内容不能为空'),
+    ];
   }
 
   static async searchNews(req, res, next) {
@@ -111,7 +76,7 @@ class NewsController {
     }
   }
 
-  // 获取用户列表
+  // 获取新闻列表
   static async getNews(req, res, next) {
     try {
       const result = await NewsService.getNews();
@@ -122,7 +87,7 @@ class NewsController {
     }
   }
 
-  // 新建用户
+  // 添加新闻
   static async createNews(req, res, next) {
     try {
       // 得到验证结果
@@ -145,7 +110,7 @@ class NewsController {
     }
   }
 
-  // 根据用户 ID 获取用户信息
+  // 根据新闻 ID 获取新闻详情
   static async getNewsById(req, res, next) {
     try {
       // 得到验证结果
@@ -162,7 +127,7 @@ class NewsController {
     }
   }
 
-  // 根据用户 ID 删除用户
+  // 根据新闻 ID 删除新闻
   static async removeNewsById(req, res, next) {
     try {
       // 得到验证结果

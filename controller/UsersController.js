@@ -3,68 +3,52 @@
 const UserService = require('../service/UserService');
 const utils = require('../utils/utils');
 
-const { body, param } = require('express-validator/check');
+const { body } = require('express-validator/check');
 class UsersController {
   constructor() {}
 
+  // 根据 api动作获取api 检验规则
   static rules(method) {
-    // TODO: 需要抽取公用的
     switch (method) {
       case 'createUser':
-        return [
-          body('user_name')
-            .isString()
-            .withMessage('用户名必须是一个字符串')
-            .trim()
-            .not()
-            .isEmpty()
-            .withMessage('用户名不能为空')
-            .isLength({ min: 5 })
-            .withMessage('用户名不能小于5位数')
-            .escape(),
-          body('password')
-            .isString()
-            .withMessage('密码必须是一个字符串')
-            .trim()
-            .not()
-            .isEmpty()
-            .withMessage('密码不能为空'),
-        ];
+        return UsersController.userRule();
       case 'getUserById':
       case 'removeUserById':
-        return [
-          param('id')
-            .trim()
-            .not()
-            .isEmpty()
-            .withMessage('用户id必须存在')
-            .isMongoId()
-            .withMessage('非法的用户ID'),
-        ];
+        return [utils.validateId()];
       case 'updateUserById':
-        return [
-          body('user_name')
-            .optional()
-            .isString()
-            .withMessage('用户名是一个字符串')
-            .trim()
-            .not()
-            .isEmpty()
-            .isLength({ min: 5 })
-            .withMessage('用户名不能小于5位数')
-            .escape(),
-          body('password')
-            .optional()
-            .isString()
-            .withMessage('密码必须是一个字符串')
-            .trim()
-            .not()
-            .isEmpty()
-            .withMessage('密码不能为空'),
-        ];
+        return [utils.validateId(), ...UsersController.userRule('update')];
       default:
         return [];
     }
+  }
+
+  static userRule(type) {
+    let userName = body('user_name');
+    let password = body('password');
+
+    if (type === 'update') {
+      userName = userName.optional();
+      password = password.optional();
+    }
+    return [
+      userName
+        .isString()
+        .withMessage('用户名是一个字符串')
+        .trim()
+        .not()
+        .isEmpty()
+        .withMessage('用户名不能为空')
+        .isLength({ min: 5 })
+        .withMessage('用户名不能小于5位数')
+        .escape(),
+      password
+        .isString()
+        .withMessage('密码必须是一个字符串')
+        .trim()
+        .not()
+        .isEmpty()
+        .withMessage('密码不能为空'),
+    ];
   }
 
   // 获取用户列表
@@ -132,6 +116,7 @@ class UsersController {
     }
   }
 
+  // 根据用户 ID 更新用户信息
   static async updateUserById(req, res, next) {
     try {
       // 得到验证结果

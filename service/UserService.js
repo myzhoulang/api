@@ -40,9 +40,9 @@ class UserService {
     try {
       user = await User.findOne({ user_name: body.user_name });
       if (!user) {
-        user = await User.create(body);
+        const { _id, user_name } = await User.create(body);
 
-        return { data: user };
+        return { data: { _id, user_name } };
       } else {
         return { status: 409, message: '用户名重复' };
       }

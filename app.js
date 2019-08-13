@@ -53,6 +53,9 @@ app.use('/api/user', require('./router/user'));
 // users
 app.use('/api/users', require('./router/users'));
 
+// events
+app.use('/api/events', require('./router/events'));
+
 // news
 app.use('/api/news', require('./router/news'));
 

@@ -10,17 +10,17 @@ router
   // 获取用户列表
   .get('/', controller.getNews)
   // 新增用户
-  .post('/', controller.validate('createNews'), controller.createNews)
+  .post('/', controller.rules('createNews'), controller.createNews)
   // 根据 ID 获取指定用户
-  .get('/:id', controller.validate('getNewsById'), controller.getNewsById)
+  .get('/:id', controller.rules('getNewsById'), controller.getNewsById)
   .delete(
     '/:id',
-    controller.validate('removeNewsById'),
+    controller.rules('removeNewsById'),
     controller.removeNewsById,
   )
   .patch(
     '/:id',
-    controller.validate('updateNewsById'),
+    controller.rules('updateNewsById'),
     controller.updateNewsById,
   );
 

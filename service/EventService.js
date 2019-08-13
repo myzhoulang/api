@@ -33,6 +33,7 @@ class EventService {
     let event;
     try {
       event = await Event.create(body);
+      console.log(event)
       return { data: event };
     } catch (e) {
       return { status: e.statusCode || 500, message: e.message };
