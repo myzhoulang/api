@@ -3,11 +3,7 @@
 const UserService = require('../service/UserService');
 const utils = require('../utils/utils');
 class UserController {
-  constructor() {
-    this.rules = [];
-  }
-
-  // 获取用户列表
+  // 获取登录用户信息
   static async getUser(req, res, next) {
     try {
       const authUser = req.user;
@@ -19,6 +15,7 @@ class UserController {
     }
   }
 
+  // 更新登录用户信息
   static async updateUserById(req, res, next) {
     try {
       const authUser = req.user;

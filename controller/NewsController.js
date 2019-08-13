@@ -60,6 +60,13 @@ class NewsController {
         ];
       case 'updateNewsById':
         return [
+          param('id')
+            .trim()
+            .not()
+            .isEmpty()
+            .withMessage('用户id必须存在')
+            .isMongoId()
+            .withMessage('非法的用户ID'),
           body('title')
             .optional()
             .isString()
