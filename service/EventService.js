@@ -2,10 +2,17 @@
 const { Event } = require('../model/event');
 
 class EventService {
-  static async getEvents(query = {}) {
+  static async getEvents(params = { since: 0, counts: 30, query: {} }) {
     try {
-      const events = await Event.find(query).select('title');
-      return { data: events };
+      const { since, counts, query } = params;
+      const [events, total] = await Promise.all([
+        Event.find(query)
+          .skip(since)
+          .limit(counts)
+          .select('_id user_name'),
+        Event.countDocuments(query),
+      ]);
+      return { data: events, total: total };
     } catch (e) {
       return { status: e.statusCode || 500, message: e.message };
     }
@@ -33,7 +40,7 @@ class EventService {
     let event;
     try {
       event = await Event.create(body);
-      console.log(event)
+      console.log(event);
       return { data: event };
     } catch (e) {
       return { status: e.statusCode || 500, message: e.message };

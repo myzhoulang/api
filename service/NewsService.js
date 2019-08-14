@@ -2,10 +2,16 @@
 const { News } = require('../model/news');
 
 class NewsService {
-  static async getNews(query = {}) {
+  static async getNews(params = { since: 0, counts: 30, query: {} }) {
     try {
-      const news = await News.find(query).select('user_name');
-      return { data: news };
+      const { since, counts, query } = params;
+      const [news, total] = await Promise.all([
+        News.find(query)
+          .skip(since)
+          .limit(counts),
+        News.countDocuments(query),
+      ]);
+      return { data: news, total: total };
     } catch (e) {
       return { status: e.statusCode || 500, message: e.message };
     }

@@ -62,6 +62,9 @@ app.use('/api/news', require('./router/news'));
 // 文件上传
 app.use('/api/upload', require('./router/upload'));
 
+// 搜索
+app.use('/api/search', require('./router/search'));
+
 // 404
 app.use((req, res) => {
   res.status(404).json({

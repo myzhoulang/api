@@ -10,6 +10,8 @@ class EventsController {
   // 根据 api动作获取api 检验规则
   static rules(method) {
     switch (method) {
+      case 'getEvents':
+        return [...utils.validateLists()];
       case 'createEvent':
         return EventsController.eventRule();
       case 'getEventById':
@@ -22,6 +24,7 @@ class EventsController {
     }
   }
 
+  // 新增/更新事件的校验规则
   static eventRule(type) {
     let title = body('title');
     let eventDate = body('event_date');
@@ -75,7 +78,11 @@ class EventsController {
   // 获取事件列表
   static async getEvents(req, res, next) {
     try {
-      const result = await EventService.getEvents();
+      const { since = 0, counts = 30 } = req.query;
+      const result = await EventService.getEvents({
+        since: since,
+        limit: counts,
+      });
       const { status = 200 } = result;
       res.status(status).send(utils.makeResult(result));
     } catch (error) {

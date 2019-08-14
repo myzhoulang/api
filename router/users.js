@@ -6,7 +6,7 @@ const controller = require('../controller/UsersController');
 
 router
   // 获取用户列表
-  .get('/', controller.getUsers)
+  .get('/', controller.rules('getUsers'), controller.getUsers)
   // 新增用户
   .post('/', controller.rules('createUser'), controller.createUser)
   // 根据 ID 获取指定用户

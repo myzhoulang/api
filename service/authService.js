@@ -2,7 +2,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { User } = require('../model/user');
-const utils = require('../utils/utils');
 
 module.exports = {
   async login(body) {
@@ -12,7 +11,7 @@ module.exports = {
       }).select('user_name password');
 
       if (!user) {
-        return utils.error(401, '账号或密码错误');
+        return { status: 401, message: '账号或密码错误' };
       }
       const isUserValid = await bcrypt.compareSync(
         body.password,

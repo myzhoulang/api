@@ -1,14 +1,15 @@
 'use strict';
 
 const authService = require('../service/authService');
-const { validationResult } = require('express-validator');
+const utils = require('../utils/utils');
+
 module.exports = {
   async login(req, res, next) {
     try {
-      // 校验、转义html
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return await res.json(errors.array());
+      // 得到验证结果
+      const isValidator = await utils.validate(req, res);
+      if (!isValidator) {
+        return;
       }
       const { user_name, password } = req.body;
       const result = await authService.login({

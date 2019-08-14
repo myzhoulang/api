@@ -8,9 +8,6 @@ module.exports = {
         .trim()
         .not()
         .isEmpty()
-        .withMessage('用户名不能为空')
-        .isLength({ min: 5 })
-        .withMessage('用户名不能小于5位数')
         .escape(),
       check('password')
         .trim()

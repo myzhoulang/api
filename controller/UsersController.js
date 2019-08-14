@@ -10,6 +10,8 @@ class UsersController {
   // 根据 api动作获取api 检验规则
   static rules(method) {
     switch (method) {
+      case 'getUsers':
+        return [...utils.validateLists()];
       case 'createUser':
         return UsersController.userRule();
       case 'getUserById':
@@ -22,6 +24,7 @@ class UsersController {
     }
   }
 
+  // 新增/更新用户校验规则
   static userRule(type) {
     let userName = body('user_name');
     let password = body('password');
@@ -54,7 +57,12 @@ class UsersController {
   // 获取用户列表
   static async getUsers(req, res, next) {
     try {
-      const result = await UserService.getUsers();
+      // 获取用户列表 从第几条开始找 找多少条数据
+      const { since = 0, counts = 30 } = req.query;
+      const result = await UserService.getUsers({
+        since: since,
+        limit: counts,
+      });
       const { status = 200 } = result;
       res.status(status).send(utils.makeResult(result));
     } catch (error) {
@@ -75,7 +83,7 @@ class UsersController {
         user_name,
         password,
       });
-      const { status = 200 } = result;
+      const { status = 201 } = result;
       res.status(status).send(utils.makeResult(result));
     } catch (error) {
       next(error);
@@ -109,7 +117,7 @@ class UsersController {
       }
       const { id } = req.params;
       const result = await UserService.removeUserById(id);
-      const { status = 200 } = result;
+      const { status = 204 } = result;
       res.status(status).send(utils.makeResult(result));
     } catch (error) {
       next(error);

@@ -2,10 +2,18 @@
 const { User } = require('../model/user');
 
 class UserService {
-  static async getUsers() {
+  // 获取用户列表
+  static async getUsers(params = { since: 0, counts: 30, query: {} }) {
     try {
-      const users = await User.find().select('user_name');
-      return { data: users };
+      const { since, counts, query } = params;
+      const [users, total] = await Promise.all([
+        User.find(query)
+          .skip(since)
+          .limit(counts)
+          .select('_id user_name'),
+        User.countDocuments(query),
+      ]);
+      return { data: users, total: total };
     } catch (e) {
       return { status: e.statusCode || 500, message: e.message };
     }
@@ -64,13 +72,19 @@ class UserService {
   // 根据用户 ID 更新用户字段
   static async updateUserById(id, body) {
     try {
-      let { data: user } = await UserService.getUserByUserName(body.user_name);
+      const { data: user } = await UserService.getUserByUserName(
+        body.user_name,
+      );
       if (user && user._id.toString() !== id) {
         return { status: 409, message: '用户名重复' };
       }
-      user = await User.findByIdAndUpdate(id, { $set: body }, { new: true });
+      const { _id, user_name } = await User.findByIdAndUpdate(
+        id,
+        { $set: body },
+        { new: true },
+      );
 
-      return { data: user };
+      return { data: { _id, user_name } };
     } catch (e) {
       return { status: e.statusCode || 500, message: e.message };
     }

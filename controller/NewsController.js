@@ -14,6 +14,8 @@ class NewsController {
   // 根据 api动作获取api 检验规则
   static rules(method) {
     switch (method) {
+      case 'getNews':
+        return [...utils.validateLists()];
       case 'createNews':
         return NewsController.newsRule();
       case 'getNewsById':
@@ -26,6 +28,7 @@ class NewsController {
     }
   }
 
+  // 新增/更新新闻的规则
   static newsRule(type) {
     let title = body('title');
     let cover = body('cover');
@@ -66,20 +69,14 @@ class NewsController {
     ];
   }
 
-  static async searchNews(req, res, next) {
-    try {
-      const result = await NewsService.getNews(req.query);
-      const { status = 200 } = result;
-      res.status(status).send(utils.makeResult(result));
-    } catch (error) {
-      next(error);
-    }
-  }
-
   // 获取新闻列表
   static async getNews(req, res, next) {
     try {
-      const result = await NewsService.getNews();
+      const { since = 0, counts = 30 } = req.query;
+      const result = await NewsService.getNews({
+        since: since,
+        limit: counts,
+      });
       const { status = 200 } = result;
       res.status(status).send(utils.makeResult(result));
     } catch (error) {
@@ -144,6 +141,7 @@ class NewsController {
     }
   }
 
+  // 根据新闻 ID 更新新闻
   static async updateNewsById(req, res, next) {
     try {
       // 得到验证结果
